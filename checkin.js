@@ -1,9 +1,5 @@
 function saveEmail() {
   const prefix = document.getElementById("emailPrefix").value.trim();
-  if (!prefix || prefix.length < 3) {
-    alert("Please enter a valid Unilever ID.");
-    return;
-  }
 
   const email = prefix + "@unilever.com";
   localStorage.setItem("userEmail", email);
@@ -13,4 +9,5 @@ function saveEmail() {
 document.getElementById("emailPrefix").addEventListener("input", () => {
   const prefix = document.getElementById("emailPrefix").value.trim();
   document.getElementById("previewEmail").innerText = prefix ? prefix + "@unilever.com" : "";
+
 });
