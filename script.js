@@ -18,7 +18,7 @@ function submitBooth() {
     return;
   }
 
-  fetch("https://booth-api.onrender.com/record", {
+  fetch("https://booth-backend-i2um.onrender.com/record", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name: email, bu: "Unilever", boothID: booth })
@@ -33,4 +33,5 @@ function submitBooth() {
   .catch(err => {
     document.getElementById("status").innerText = "❌ Error submitting booth.";
   });
+
 }
