@@ -107,7 +107,7 @@ function convertToThaiTime(raw) {
 }
 
   async function loadCheckins() {
-  const res = await fetch("https://booth-api.onrender.com/admin/checkins");
+  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/checkins");
   const data = await res.json();
   checkinData = data; // ✅ เก็บไว้ใช้ export
 
@@ -123,7 +123,7 @@ function convertToThaiTime(raw) {
 }
   
   async function loadLogs() {
-  const res = await fetch("https://booth-api.onrender.com/admin/logs");
+  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/logs");
   const data = await res.json();
   boothLogData = data; // ✅ เก็บไว้ใช้ export
 
@@ -143,7 +143,7 @@ function convertToThaiTime(raw) {
 }
 
 async function loadLucky() {
-  const res = await fetch("https://booth-api.onrender.com/admin/lucky");
+  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/lucky");
   const data = await res.json();
   luckyData = data; // ✅ เก็บไว้ใช้ export
 
@@ -161,7 +161,7 @@ async function loadLucky() {
     const confirmReset = confirm("Are you sure you want to reset all booth logs and lucky draw data?");
     if (!confirmReset) return;
 
-    const res = await fetch("https://booth-api.onrender.com/admin/reset", {
+    const res = await fetch("https://booth-backend-i2um.onrender.com/admin/reset", {
       method: "POST"
     });
     const data = await res.json();
@@ -222,6 +222,7 @@ function exportLuckyCSV() {
 </body>
 
 </html>
+
 
 
 
