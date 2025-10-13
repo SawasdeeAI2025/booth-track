@@ -9,7 +9,7 @@ window.onload = () => {
     return;
   }
 
-  fetch("https://booth-api.onrender.com/record", {
+  fetch("https://booth-backend-i2um.onrender.com/record", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, boothID })
@@ -29,3 +29,4 @@ window.onload = () => {
     });
 
 };
+
