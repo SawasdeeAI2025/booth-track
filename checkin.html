@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sawasdee AI Check-in</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="unilever-logo.png" alt="Unilever" class="logo" />
+
+    <h1 class="main-title">
+      <span class="line1">Q3 Townhall</span>
+      <span class="line2">x</span>
+      <span class="line3">Sawasdee, AI</span>
+    </h1>
+
+    <div class="checkin-box">
+      <label for="emailPrefix">Please enter your email to start your AI Journey.</label>
+      <div class="email-input-group">
+        <input type="text" id="emailPrefix" placeholder="Your Unilever email" />
+        <span class="email-domain">@unilever.com</span>
+      </div>
+      <button onclick="saveEmail()">Check In & Get Your Passport</button>
+    </div>
+
+    <div class="promo">
+      <p class="eligibility">Visit at least two booths to be eligible for a lucky draw!</p>
+    </div>
+  </div>
+
+  <div id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:999;">
+  </div>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+
+    async function saveEmail() {
+      const prefix = document.getElementById("emailPrefix").value.trim();
+      if (!prefix || prefix.length < 3) {
+        showToast("❌ Please enter a valid Unilever ID.");
+        return;
+      }
+
+      const email = prefix + "@unilever.com";
+      localStorage.setItem("userEmail", email);
+
+      // ✅ ตรวจว่าเคย check-in แล้วหรือยัง
+      try {
+        const check = await fetch(`https://booth-api.onrender.com/checkin/status?email=${email}`);
+        const result = await check.json();
+
+        if (result.exists) {
+          showToast("⚠️ This email has already checked in.");
+          return;
+        }
+
+        // ✅ สร้าง timestamp แบบ ISO
+        const timestamp = new Date().toISOString();
+
+        // ✅ ส่งข้อมูลไปยัง backend
+        const res = await fetch("https://booth-api.onrender.com/checkin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, timestamp })
+        });
+
+        const data = await res.json();
+        showToast("✅ Check-in successful! You can now scan booth QR codes.");
+      } catch (err) {
+        showToast("❌ Failed to record check-in.");
+      }
+    }
+  </script>
+</body>
+</html>

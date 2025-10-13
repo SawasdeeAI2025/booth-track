@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booth Check-in</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="unilever-logo.png" alt="Unilever" class="logo" />
+
+    <h1 class="booth-title" id="boothName">Booth</h1>
+
+    <div class="checkin-box">
+      <div class="email-input-group">
+        <input type="text" id="emailDisplay" disabled />
+      </div>
+      <button onclick="submitBooth()">Get Stamped</button>
+    </div>
+
+    <div class="promo">
+      <p class="eligibility">Visit at least two booths to be eligible for a lucky draw!</p>
+    </div>
+
+    <p id="status" style="margin-top: 2rem; font-weight: bold;"></p>
+  </div>
+
+  <script>
+    window.onload = () => {
+      const email = localStorage.getItem("userEmail");
+      const urlParams = new URLSearchParams(window.location.search);
+      const booth = urlParams.get("booth") || "Booth";
+      document.getElementById("boothName").innerText = booth;
+
+
+      if (!email || !booth) {
+        document.getElementById("status").innerText = "❌ Missing email or booth info.";
+        return;
+      }
+
+      document.getElementById("emailDisplay").value = email;
+
+      // Store booth name for submission
+      window.boothID = booth;
+      window.email = email;
+    };
+
+   async function submitBooth() {
+  console.log("Sending:", window.email, window.boothID);
+
+  // ✅ สร้าง timestamp เวลาไทย
+  const timestamp = new Date().toLocaleString('th-TH', {
+    timeZone: 'Asia/Bangkok',
+    hour12: false
+  });
+
+  // ✅ ตรวจว่าเคย stamp booth นี้แล้วหรือยัง
+  const check = await fetch(`https://booth-api.onrender.com/booth/status?email=${email}&booth=${boothID}`);
+  const result = await check.json();
+
+  if (result.exists) {
+    showToast("⚠️ This email has already been stamped for this booth.");
+    return;
+  }
+
+      
+  fetch("https://booth-api.onrender.com/record", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: window.email,
+      boothID: window.boothID,
+      timestamp: timestamp // ✅ ส่ง timestamp ไปด้วย
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        let msg = `✅ Booth "${window.boothID}" recorded at ${timestamp}. You’ve visited ${data.booths_collected} booth(s).`;
+        if (data.booths_collected >= 2) {
+          msg += " 🎉 You're eligible for the Lucky Draw!";
+        }
+        document.getElementById("status").innerText = msg;
+      } else {
+        document.getElementById("status").innerText = "❌ Error: " + data.message;
+      }
+    })
+    .catch(() => {
+      document.getElementById("status").innerText = "❌ Failed to connect to server.";
+    });
+}
+  </script>
+  
+<div id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:999;">
+</div>
+
+<script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 3000);
+  }
+</script>
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+

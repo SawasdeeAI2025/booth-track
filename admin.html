@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #e0e0ff;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    .reset-btn {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Booth Logs & Lucky Draw Eligibility</p>
+
+    <div class="section">
+      <h2>Check-in Records</h2>
+      <table id="checkinTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Booth Logs</h2>
+      <input type="text" id="logFilter" placeholder="Filter by email or booth..." style="margin-bottom: 1rem; padding: 0.5rem; width: 100%; max-width: 300px;" />
+      <table id="logTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Booth</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Lucky Draw Eligible</h2>
+      <table id="luckyTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  <button onclick="exportCheckinCSV()">📄 Export Check-in CSV</button>
+  <button onclick="exportBoothCSV()">📄 Export Booth Logs CSV</button>
+  <button onclick="exportLuckyCSV()">📄 Export Lucky Draw CSV</button>
+    
+    <div class="section">
+      <h2>Danger Zone</h2>
+      <button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Database</button>
+      <p id="resetStatus" style="margin-top: 1rem; font-weight: bold;"></p>
+    </div>
+  </div>
+
+<script>
+let checkinData = [];
+let boothLogData = [];
+let luckyData = [];
+  // ✅ ฟังก์ชันแปลง timestamp จาก UTC → เวลาไทย
+function convertToThaiTime(raw) {
+  // ลองแปลง timestamp ด้วย Date.parse()
+  const parsed = Date.parse(raw);
+  if (isNaN(parsed)) return raw; // ถ้าแปลงไม่ได้ ให้แสดง raw ไปเลย
+
+  const date = new Date(parsed);
+  return date.toLocaleString('th-TH', {
+    timeZone: 'Asia/Bangkok',
+    hour12: false
+  });
+}
+
+  async function loadCheckins() {
+  const res = await fetch("https://booth-api.onrender.com/admin/checkins");
+  const data = await res.json();
+  checkinData = data; // ✅ เก็บไว้ใช้ export
+
+  const tbody = document.querySelector("#checkinTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(row => {
+    const thaiTime = convertToThaiTime(row.timestamp);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${row.email}</td><td>${thaiTime}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+  
+  async function loadLogs() {
+  const res = await fetch("https://booth-api.onrender.com/admin/logs");
+  const data = await res.json();
+  boothLogData = data; // ✅ เก็บไว้ใช้ export
+
+  const tbody = document.querySelector("#logTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(row => {
+    const thaiTime = convertToThaiTime(row.timestamp);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.email}</td>
+      <td>${row.booth}</td>
+      <td>${thaiTime}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadLucky() {
+  const res = await fetch("https://booth-api.onrender.com/admin/lucky");
+  const data = await res.json();
+  luckyData = data; // ✅ เก็บไว้ใช้ export
+
+  const tbody = document.querySelector("#luckyTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${row.email}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+  async function resetDatabase() {
+    const confirmReset = confirm("Are you sure you want to reset all booth logs and lucky draw data?");
+    if (!confirmReset) return;
+
+    const res = await fetch("https://booth-api.onrender.com/admin/reset", {
+      method: "POST"
+    });
+    const data = await res.json();
+    document.getElementById("resetStatus").innerText = data.message || "Reset complete.";
+    loadLogs();
+    loadLucky();
+    loadCheckins(); // ✅ เพิ่มบรรทัดนี้
+
+  }
+
+  function exportCSV(data, filename, headers, formatter) {
+  let csv = [headers];
+  data.forEach(row => csv.push(formatter(row)));
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCheckinCSV() {
+  exportCSV(checkinData, "checkin.csv", "\"Email\",\"Timestamp\"", row =>
+    `"${row.email}","${convertToThaiTime(row.timestamp)}"`
+  );
+}
+
+function exportBoothCSV() {
+  exportCSV(boothLogData, "booth-logs.csv", "\"Email\",\"Booth\",\"Timestamp\"", row =>
+    `"${row.email}","${row.booth}","${convertToThaiTime(row.timestamp)}"`
+  );
+}
+
+function exportLuckyCSV() {
+  exportCSV(luckyData, "lucky-draw.csv", "\"Email\"", row =>
+    `"${row.email}"`
+  );
+}
+
+  // ✅ โหลดข้อมูลเมื่อเปิดหน้า
+  loadLogs();
+  loadLucky();
+  loadCheckins(); // ถ้ามี
+
+  // ✅ เพิ่ม filter สำหรับ Booth Logs
+  document.getElementById("logFilter").addEventListener("input", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#logTable tbody tr");
+    rows.forEach(row => {
+      const email = row.cells[0].innerText.toLowerCase();
+      const booth = row.cells[1].innerText.toLowerCase();
+      row.style.display = email.includes(filter) || booth.includes(filter) ? "" : "none";
+    });
+  });
+
+</script>
+</body>
+
+</html>
+
+
+
+
+
+
