@@ -59,7 +59,7 @@ function redirectToDefaultBrowser() {
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   if (isIOS) {
-    alert("⚠️ หากเห็นปุ่ม 'Open in Safari' ที่มุมขวาล่าง กรุณากดเพื่อใช้งานเต็มรูปแบบ");
+    showToast("⚠️ See ‘Open in Safari’ at the bottom right? Tap it to get the full experience!");
   } else if (isAndroid) {
     window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
   }
@@ -148,6 +148,7 @@ background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-sha
   
 </body>
 </html>
+
 
 
 
