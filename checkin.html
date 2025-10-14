@@ -45,11 +45,11 @@
       }, 3000);
     }
 
-    
+
 function isInAppBrowser() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
-  // ตรวจจับ In-App Browser ของ iOS และ Android
-  return /FBAN|FBAV|Instagram|Line|Twitter|Messenger|CriOS|FxiOS/i.test(ua);
+  // ตรวจจับ LINE, FB, IG, Messenger, Twitter
+  return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
 }
 
 function redirectToDefaultBrowser() {
@@ -58,11 +58,8 @@ function redirectToDefaultBrowser() {
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   if (isIOS) {
-    // iOS: ไม่สามารถบังคับเปิด Safari ได้โดยตรง
-    // แนะนำให้ผู้ใช้กดปุ่ม "Open in Safari" ที่มุมขวาล่างของหน้าต่าง
-    alert("กรุณากดปุ่ม 'เปิดใน Safari' ที่มุมขวาล่างของหน้าต่างนี้เพื่อใช้งานเต็มรูปแบบ");
+    alert("⚠️ หากเห็นปุ่ม 'Open in Safari' ที่มุมขวาล่าง กรุณากดเพื่อใช้งานเต็มรูปแบบ");
   } else if (isAndroid) {
-    // Android: ใช้ intent:// เพื่อบังคับเปิด Chrome
     window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
   }
 }
@@ -74,9 +71,14 @@ if (isInAppBrowser()) {
       <button onclick="redirectToDefaultBrowser()" style="padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
         เปิดผ่าน Browser หลัก
       </button>
+      <p style="margin-top:1rem;font-size:14px;color:#555;">
+        iOS: กดปุ่ม 'Open in Safari' ที่มุมขวาล่าง<br>
+        Android: จะเปิด Chrome โดยอัตโนมัติ
+      </p>
     </div>
   `;
 }
+
 
     
     async function saveEmail() {
@@ -114,6 +116,7 @@ if (isInAppBrowser()) {
   </script>
 </body>
 </html>
+
 
 
 
