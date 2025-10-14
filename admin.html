@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  style.css
   <style>
     table {
       width: 100%;
@@ -42,10 +42,7 @@
       <h2>Check-in Records</h2>
       <table id="checkinTable">
         <thead>
-          <tr>
-            <th>Email</th>
-            <th>Timestamp</th>
-          </tr>
+          <tr><th>Email</th><th>Timestamp</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -56,11 +53,7 @@
       <input type="text" id="logFilter" placeholder="Filter by email or booth..." style="margin-bottom: 1rem; padding: 0.5rem; width: 100%; max-width: 300px;" />
       <table id="logTable">
         <thead>
-          <tr>
-            <th>Email</th>
-            <th>Booth</th>
-            <th>Timestamp</th>
-          </tr>
+          <tr><th>Email</th><th>Booth</th><th>Timestamp</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -70,17 +63,15 @@
       <h2>Lucky Draw Eligible</h2>
       <table id="luckyTable">
         <thead>
-          <tr>
-            <th>Email</th>
-          </tr>
+          <tr><th>Email</th></tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
 
-  <button onclick="exportCheckinCSV()">📄 Export Check-in CSV</button>
-  <button onclick="exportBoothCSV()">📄 Export Booth Logs CSV</button>
-  <button onclick="exportLuckyCSV()">📄 Export Lucky Draw CSV</button>
+    <button onclick="exportCheckinCSV()">📄 Export Check-in CSV</button>
+    <button onclick="exportBoothCSV()">📄 Export Booth Logs CSV</button>
+    <button onclick="exportLuckyCSV()">📄 Export Lucky Draw CSV</button>
     
     <div class="section">
       <h2>Danger Zone</h2>
@@ -90,142 +81,109 @@
   </div>
 
 <script>
-let checkinData = [];
-let boothLogData = [];
-let luckyData = [];
-  // ✅ ฟังก์ชันแปลง timestamp จาก UTC → เวลาไทย
+const API_BASE = "https://booth-backend-i2um.onrender.com";
+const ADMIN_TOKEN = "secret-token"; // ต้องตรงกับค่าใน Render ENV
+let checkinData = [], boothLogData = [], luckyData = [];
+
+// ✅ ฟังก์ชันแปลง timestamp จาก UTC → เวลาไทย
 function convertToThaiTime(raw) {
-  // ลองแปลง timestamp ด้วย Date.parse()
   const parsed = Date.parse(raw);
-  if (isNaN(parsed)) return raw; // ถ้าแปลงไม่ได้ ให้แสดง raw ไปเลย
-
-  const date = new Date(parsed);
-  return date.toLocaleString('th-TH', {
-    timeZone: 'Asia/Bangkok',
-    hour12: false
-  });
+  if (isNaN(parsed)) return raw;
+  return new Date(parsed).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', hour12: false });
 }
 
-  async function loadCheckins() {
-  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/checkins");
-  const data = await res.json();
-  checkinData = data; // ✅ เก็บไว้ใช้ export
+async function fetchData(url) {
+  try {
+    const res = await fetch(url, { headers: { "Authorization": `Bearer ${ADMIN_TOKEN}` } });
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return [];
+  }
+}
 
+async function loadCheckins() {
+  const data = await fetchData(`${API_BASE}/admin/checkins`);
+  checkinData = data;
   const tbody = document.querySelector("#checkinTable tbody");
-  tbody.innerHTML = "";
-
+  tbody.innerHTML = data.length ? "" : "<tr><td colspan='2'>No data or unauthorized</td></tr>";
   data.forEach(row => {
-    const thaiTime = convertToThaiTime(row.timestamp);
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.email}</td><td>${thaiTime}</td>`;
-    tbody.appendChild(tr);
+    tbody.innerHTML += `<tr><td>${row.email}</td><td>${convertToThaiTime(row.timestamp)}</td></tr>`;
   });
 }
-  
-  async function loadLogs() {
-  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/logs");
-  const data = await res.json();
-  boothLogData = data; // ✅ เก็บไว้ใช้ export
 
+async function loadLogs() {
+  const data = await fetchData(`${API_BASE}/admin/logs`);
+  boothLogData = data;
   const tbody = document.querySelector("#logTable tbody");
-  tbody.innerHTML = "";
-
+  tbody.innerHTML = data.length ? "" : "<tr><td colspan='3'>No data or unauthorized</td></tr>";
   data.forEach(row => {
-    const thaiTime = convertToThaiTime(row.timestamp);
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.email}</td>
-      <td>${row.booth}</td>
-      <td>${thaiTime}</td>
-    `;
-    tbody.appendChild(tr);
+    tbody.innerHTML += `<tr><td>${row.email}</td><td>${row.booth}</td><td>${convertToThaiTime(row.timestamp)}</td></tr>`;
   });
 }
 
 async function loadLucky() {
-  const res = await fetch("https://booth-backend-i2um.onrender.com/admin/lucky");
-  const data = await res.json();
-  luckyData = data; // ✅ เก็บไว้ใช้ export
-
+  const data = await fetchData(`${API_BASE}/admin/lucky`);
+  luckyData = data;
   const tbody = document.querySelector("#luckyTable tbody");
-  tbody.innerHTML = "";
-
-  data.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.email}</td>`;
-    tbody.appendChild(tr);
+  tbody.innerHTML = data.length ? "" : "<tr><td>No data or unauthorized</td></tr>";
+  data.forEach(email => {
+    tbody.innerHTML += `<tr><td>${email}</td></tr>`;
   });
 }
 
-  async function resetDatabase() {
-    const confirmReset = confirm("Are you sure you want to reset all booth logs and lucky draw data?");
-    if (!confirmReset) return;
-
-    const res = await fetch("https://booth-backend-i2um.onrender.com/admin/reset", {
-      method: "POST"
+async function resetDatabase() {
+  if (!confirm("Are you sure you want to reset all booth logs and lucky draw data?")) return;
+  try {
+    const res = await fetch(`${API_BASE}/admin/reset`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${ADMIN_TOKEN}` }
     });
     const data = await res.json();
     document.getElementById("resetStatus").innerText = data.message || "Reset complete.";
-    loadLogs();
-    loadLucky();
-    loadCheckins(); // ✅ เพิ่มบรรทัดนี้
-
+    loadLogs(); loadLucky(); loadCheckins();
+  } catch (err) {
+    document.getElementById("resetStatus").innerText = "Error resetting database.";
   }
+}
 
-  function exportCSV(data, filename, headers, formatter) {
+function exportCSV(data, filename, headers, formatter) {
   let csv = [headers];
   data.forEach(row => csv.push(formatter(row)));
   const blob = new Blob([csv.join("\n")], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
+  a.href = url; a.download = filename; a.click();
   URL.revokeObjectURL(url);
 }
 
 function exportCheckinCSV() {
   exportCSV(checkinData, "checkin.csv", "\"Email\",\"Timestamp\"", row =>
-    `"${row.email}","${convertToThaiTime(row.timestamp)}"`
-  );
+    `"${row.email}","${convertToThaiTime(row.timestamp)}"`);
 }
 
 function exportBoothCSV() {
   exportCSV(boothLogData, "booth-logs.csv", "\"Email\",\"Booth\",\"Timestamp\"", row =>
-    `"${row.email}","${row.booth}","${convertToThaiTime(row.timestamp)}"`
-  );
+    `"${row.email}","${row.booth}","${convertToThaiTime(row.timestamp)}"`);
 }
 
 function exportLuckyCSV() {
-  exportCSV(luckyData, "lucky-draw.csv", "\"Email\"", row =>
-    `"${row.email}"`
-  );
+  exportCSV(luckyData, "lucky-draw.csv", "\"Email\"", email => `"${email}"`);
 }
 
-  // ✅ โหลดข้อมูลเมื่อเปิดหน้า
-  loadLogs();
-  loadLucky();
-  loadCheckins(); // ถ้ามี
+// ✅ โหลดข้อมูลเมื่อเปิดหน้า
+loadLogs(); loadLucky(); loadCheckins();
 
-  // ✅ เพิ่ม filter สำหรับ Booth Logs
-  document.getElementById("logFilter").addEventListener("input", function () {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#logTable tbody tr");
-    rows.forEach(row => {
-      const email = row.cells[0].innerText.toLowerCase();
-      const booth = row.cells[1].innerText.toLowerCase();
-      row.style.display = email.includes(filter) || booth.includes(filter) ? "" : "none";
-    });
+// ✅ Filter สำหรับ Booth Logs
+document.getElementById("logFilter").addEventListener("input", function () {
+  const filter = this.value.toLowerCase();
+  document.querySelectorAll("#logTable tbody tr").forEach(row => {
+    const email = row.cells[0].innerText.toLowerCase();
+    const booth = row.cells[1].innerText.toLowerCase();
+    row.style.display = email.includes(filter) || booth.includes(filter) ? "" : "none";
   });
-
+});
 </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
