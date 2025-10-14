@@ -35,6 +35,10 @@
   </div>
 
   <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectBooth = urlParams.get("redirectBooth") || "";
+    window.redirectBooth = redirectBooth;
+    
     function showToast(message) {
       const toast = document.getElementById("toast");
       toast.innerText = message;
@@ -79,5 +83,6 @@
   </script>
 </body>
 </html>
+
 
 
