@@ -67,13 +67,13 @@ function redirectToDefaultBrowser() {
 if (isInAppBrowser()) {
   document.body.innerHTML = `
     <div style="padding:2rem;text-align:center;font-family:sans-serif;">
-      ⚠️ คุณกำลังเปิดผ่าน In-App Browser ซึ่งอาจทำงานไม่สมบูรณ์<br><br>
+      ⚠️ You are using the In-App Browser, which may cause issues/instability<br><br>
       <button onclick="redirectToDefaultBrowser()" style="padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
-        เปิดผ่าน Browser หลัก
+        Open in Main Browser
       </button>
       <p style="margin-top:1rem;font-size:14px;color:#555;">
-        iOS: กดปุ่ม 'Open in Safari' ที่มุมขวาล่าง<br>
-        Android: จะเปิด Chrome โดยอัตโนมัติ
+        iOS: Tap 'Open in Safari' (bottom right)<br>
+        Android: Chrome will open automatically
       </p>
     </div>
   `;
@@ -114,8 +114,14 @@ if (isInAppBrowser()) {
       }
     }
   </script>
+
+  <p style="font-size: 12px; color: #666; text-align: center; margin-top: 2rem;">
+  ⚠️ Open this link in your internet browser before check-in.
+</p>
+  
 </body>
 </html>
+
 
 
 
