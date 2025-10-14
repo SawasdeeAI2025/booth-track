@@ -34,9 +34,8 @@
       document.getElementById("boothName").innerText = booth;
 
 
-      if (!email) {
-        // ถ้าไม่มี email → redirect ไปหน้า check-in พร้อม booth ที่ตั้งใจไป
-        window.location.href = `checkin.html?redirectBooth=${encodeURIComponent(booth)}`;
+      if (!email || !booth) {
+        document.getElementById("status").innerText = "❌ Missing email or booth info.";
         return;
       }
 
@@ -110,14 +109,3 @@ background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-sha
   
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
