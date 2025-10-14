@@ -48,6 +48,7 @@
 
 function isInAppBrowser() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
+  console.log("User Agent:", ua); // ✅ เพิ่มบรรทัดนี้
   // ตรวจจับ LINE, FB, IG, Messenger, Twitter
   return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
 }
@@ -122,6 +123,7 @@ if (isInAppBrowser()) {
   
 </body>
 </html>
+
 
 
 
