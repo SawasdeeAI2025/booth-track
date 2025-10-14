@@ -1,8 +1,10 @@
 // booth.js
 window.onload = () => {
-  const email = localStorage.getItem("userEmail");
   const urlParams = new URLSearchParams(window.location.search);
   const booth = urlParams.get("booth");
+
+  // ✅ ปรับตรงนี้: fallback จาก URL ถ้า localStorage ไม่มี
+  const email = localStorage.getItem("userEmail") || urlParams.get("email");
 
   if (!email || !booth) {
     document.getElementById("status").innerText = "❌ Missing email or booth info.";
@@ -12,7 +14,7 @@ window.onload = () => {
   fetch("https://booth-backend-i2um.onrender.com/record", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, boothID })
+    body: JSON.stringify({ email, boothID: booth })
   })
     .then(res => res.json())
     .then(data => {
@@ -27,6 +29,4 @@ window.onload = () => {
     .catch(() => {
       document.getElementById("status").innerText = "❌ Failed to connect to server.";
     });
-
 };
-
