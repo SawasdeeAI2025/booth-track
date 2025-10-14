@@ -11,3 +11,13 @@ document.getElementById("emailPrefix").addEventListener("input", () => {
   document.getElementById("previewEmail").innerText = prefix ? prefix + "@unilever.com" : "";
 
 });
+
+function isInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return /FBAN|FBAV|Instagram|Line/i.test(ua);
+}
+
+if (isInAppBrowser()) {
+  alert("⚠️ For full functionality, please open this link using Chrome or Safari.");
+}
+
