@@ -63,7 +63,7 @@ function redirectToDefaultBrowser() {
     window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
   }
 }
-
+window.onload = () => {
 if (isInAppBrowser()) {
   document.body.innerHTML = `
     <div style="padding:2rem;text-align:center;font-family:sans-serif;">
@@ -77,7 +77,8 @@ if (isInAppBrowser()) {
       </p>
     </div>
   `;
-}
+  }
+};
 
 
     
@@ -121,6 +122,7 @@ if (isInAppBrowser()) {
   
 </body>
 </html>
+
 
 
 
