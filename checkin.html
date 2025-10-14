@@ -45,6 +45,40 @@
       }, 3000);
     }
 
+    
+function isInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
+}
+
+function redirectToDefaultBrowser() {
+  const url = window.location.href;
+
+  // ตรวจสอบว่าเป็น iOS หรือ Android
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  if (isIOS) {
+    // iOS: ใช้ Universal Link (https://) จะเปิด Safari โดยตรง
+    window.location.href = url;
+  } else if (isAndroid) {
+    // Android: ใช้ intent:// เพื่อบังคับเปิด Chrome
+    window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
+  }
+}
+
+if (isInAppBrowser()) {
+  document.body.innerHTML = `
+    <div style="padding:2rem;text-align:center;font-family:sans-serif;">
+      ⚠️ คุณกำลังเปิดผ่าน In-App Browser ซึ่งอาจทำให้ระบบทำงานไม่สมบูรณ์<br><br>
+      <button onclick="redirectToDefaultBrowser()" style="padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
+        เปิดผ่าน Browser หลัก
+      </button>
+    </div>
+  `;
+}
+
+    
     async function saveEmail() {
       const prefix = document.getElementById("emailPrefix").value.trim();
 
@@ -80,6 +114,7 @@
   </script>
 </body>
 </html>
+
 
 
 
