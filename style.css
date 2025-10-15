@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Aptos';
   background: linear-gradient(to bottom right, #cce0ff, #e0ccff);
   color: #333;
   text-align: center;
@@ -150,6 +150,7 @@ button {
 }
 
 }
+
 
 
 
