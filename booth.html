@@ -4,31 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Booth Check-in</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Background decorations -->
-  <div class="dot-grid dot-grid-1 bg-decoration"></div>
-  <div class="dot-grid dot-grid-2 bg-decoration"></div>
-  <div class="circuit-line circuit-h1 bg-decoration"></div>
-  <div class="circuit-line circuit-v1 bg-decoration"></div>
-  <div class="shape-decoration triangle triangle-1"></div>
-  <div class="shape-decoration triangle triangle-2"></div>
-  <div class="shape-decoration circle-small circle-1"></div>
-  <div class="shape-decoration circle-small circle-2"></div>
-
   <div class="container">
     <img src="unilever-logo.png" alt="Unilever" class="logo" />
 
-    <h1 class="main-title">
-      <span class="line1">Booth Check-in</span>
-      <span class="line2">x</span>
-      <span class="line3" id="boothName">Booth</span>
-    </h1>
+    <h1 class="booth-title" id="boothName">Booth</h1>
 
     <div class="checkin-box">
-      <label for="emailDisplay">Your Unilever email</label>
       <div class="email-input-group">
         <input type="text" id="emailDisplay" disabled />
       </div>
@@ -40,43 +24,15 @@
     </div>
 
     <p id="status" style="margin-top: 2rem; font-weight: bold;"></p>
-    <p class="warning-text">⚠️ Open this link in your internet browser before check-in.</p>
   </div>
 
-  <div id="toast"></div>
-
   <script>
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.innerText = message;
-      toast.style.display = "block";
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 3000);
-    }
-
-    function isInAppBrowser() {
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
-      return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
-    }
-
-    function redirectToDefaultBrowser() {
-      const url = window.location.href;
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const isAndroid = /Android/i.test(navigator.userAgent);
-
-      if (isIOS) {
-        showToast("⚠️ See 'Open in Safari' at the bottom right? Tap it to get the full experience!");
-      } else if (isAndroid) {
-        window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
-      }
-    }
-
     window.onload = () => {
       const email = localStorage.getItem("userEmail");
       const urlParams = new URLSearchParams(window.location.search);
       const booth = urlParams.get("booth") || "Booth";
       document.getElementById("boothName").innerText = booth;
+
 
       if (!email || !booth) {
         document.getElementById("status").innerText = "❌ Missing email or booth info.";
@@ -84,66 +40,111 @@
       }
 
       document.getElementById("emailDisplay").value = email;
+
+      // Store booth name for submission
       window.boothID = booth;
       window.email = email;
-
-      if (isInAppBrowser()) {
-        document.body.innerHTML = `
-          <div style="padding:2.5rem;text-align:center;font-family:Inter, sans-serif;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
-            <h2 style="color:#8BA4E8;margin-bottom:1rem;font-size:1.5rem;">⚠️ Browser Detection</h2>
-            <p style="margin-bottom:1.5rem;color:#7B8CDE;line-height:1.6;">You are using an In-App Browser, which may cause issues/instability</p>
-            <button onclick="redirectToDefaultBrowser()" style="padding:14px 28px;background:linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);color:#fff;border:none;border-radius:14px;font-size:16px;cursor:pointer;font-weight:600;box-shadow:0 8px 24px rgba(139,164,232,0.35);">
-              Open in Main Browser
-            </button>
-            <p style="margin-top:1.5rem;font-size:14px;color:#B8C5E0;line-height:1.8;">
-              iOS: Tap 'Open in Safari' (bottom right)<br>
-              Android: Chrome will open automatically
-            </p>
-          </div>
-          <div id="toast"></div>
-        `;
-      }
     };
 
-    async function submitBooth() {
-      const timestamp = new Date().toLocaleString('th-TH', {
-        timeZone: 'Asia/Bangkok',
-        hour12: false
-      });
 
-      const check = await fetch(`https://booth-backend-i2um.onrender.com/booth/status?email=${email}&booth=${boothID}`);
-      const result = await check.json();
+function isInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  // ตรวจจับ LINE, FB, IG, Messenger, Twitter
+  return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
+}
 
-      if (result.exists) {
-        showToast("⚠️ This email has already been stamped for this booth.");
-        return;
+function redirectToDefaultBrowser() {
+  const url = window.location.href;
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  if (isIOS) {
+    showToast("⚠️ See ‘Open in Safari’ at the bottom right? Tap it to get the full experience!");
+  } else if (isAndroid) {
+    window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
+  }
+}
+
+if (isInAppBrowser()) {
+  document.body.innerHTML = `
+    <div style="padding:2rem;text-align:center;font-family:'Inter', sans-serif;">
+      ⚠️ You are using the In-App Browser, which may cause issues/instability<br><br>
+      <button onclick="redirectToDefaultBrowser()" style="padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
+        Open in Main Browser
+      </button>
+      <p style="margin-top:1rem;font-size:14px;color:#555;">
+        iOS: Tap 'Open in Safari' (bottom right)<br>
+        Android: Chrome will open automatically
+      </p>
+    </div>
+  `;
+}
+
+
+   async function submitBooth() {
+  console.log("Sending:", window.email, window.boothID);
+
+  // ✅ สร้าง timestamp เวลาไทย
+  const timestamp = new Date().toLocaleString('th-TH', {
+    timeZone: 'Asia/Bangkok',
+    hour12: false
+  });
+
+  // ✅ ตรวจว่าเคย stamp booth นี้แล้วหรือยัง
+  const check = await fetch(`https://booth-backend-i2um.onrender.com/booth/status?email=${email}&booth=${boothID}`);
+  const result = await check.json();
+
+  if (result.exists) {
+    showToast("⚠️ This email has already been stamped for this booth.");
+    return;
+  }
+
+      
+  fetch("https://booth-backend-i2um.onrender.com/record", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: window.email,
+      boothID: window.boothID,
+      timestamp: timestamp // ✅ ส่ง timestamp ไปด้วย
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        let msg = `✅ Booth "${window.boothID}" recorded at ${timestamp}. You’ve visited ${data.booths_collected} booth(s).`;
+        if (data.booths_collected >= 2) {
+          msg += " 🎉 You're eligible for the Lucky Draw!";
+        }
+        document.getElementById("status").innerText = msg;
+      } else {
+        document.getElementById("status").innerText = "❌ Error: " + data.message;
       }
-
-      fetch("https://booth-backend-i2um.onrender.com/record", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: window.email,
-          boothID: window.boothID,
-          timestamp: timestamp
-        })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            let msg = `✅ Booth "${window.boothID}" recorded at ${timestamp}. You’ve visited ${data.booths_collected} booth(s).`;
-            if (data.booths_collected >= 2) {
-              msg += " 🎉 You're eligible for the Lucky Draw!";
-            }
-            document.getElementById("status").innerText = msg;
-          } else {
-            document.getElementById("status").innerText = "❌ Error: " + data.message;
-          }
-        })
-        .catch(() => {
-          document.getElementById("status").innerText = "❌ Failed to connect to server.";
-        });
-    }
+    })
+    .catch(() => {
+      document.getElementById("status").innerText = "❌ Failed to connect to server.";
+    });
+}
   </script>
+  
+<div id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:999;">
+</div>
+
+<script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 3000);
+  }
+</script>
+
+<p style="font-size: 12px; color: #666; text-align: center; margin-top: 2rem;">
+  ⚠️ Open this link in your internet browser before check-in.
+</p>
+  
 </body>
 </html>
