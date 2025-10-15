@@ -13,8 +13,8 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #E6E9FF 0%, #D4E4FF 50%, #E0D4FF 100%);
+      font-family: 'Aptos';
+      background: linear-gradient(135deg, #B8BFED 0%, #A2BFED 50%, #B8A2ED 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -59,23 +59,88 @@
 
     .dot-grid {
       position: absolute;
-      width: 150px;
-      height: 150px;
-      opacity: 0.15;
+      width: 200px;
+      height: 200px;
+      opacity: 0.2;
       background-image: radial-gradient(circle, #A8C8FF 2px, transparent 2px);
-      background-size: 20px 20px;
+      background-size: 15px 15px;
     }
 
     .dot-grid-1 {
-      top: 50px;
-      left: 50px;
+      top: 30px;
+      left: 30px;
       animation: fadeInOut 8s infinite ease-in-out;
     }
 
     .dot-grid-2 {
-      bottom: 80px;
-      right: 80px;
+      bottom: 50px;
+      right: 50px;
       animation: fadeInOut 10s infinite ease-in-out 2s;
+    }
+
+    /* Circuit lines decoration */
+    .circuit-line {
+      position: absolute;
+      border: 1px dashed rgba(168, 200, 255, 0.25);
+    }
+
+    .circuit-h1 {
+      width: 200px;
+      height: 0;
+      top: 100px;
+      left: 0;
+    }
+
+    .circuit-v1 {
+      width: 0;
+      height: 150px;
+      top: 0;
+      right: 150px;
+    }
+
+    /* Small decorative shapes */
+    .shape-decoration {
+      position: absolute;
+      opacity: 0.15;
+    }
+
+    .triangle {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 25px solid #A8C8FF;
+    }
+
+    .triangle-1 {
+      top: 60px;
+      left: 120px;
+      animation: fadeInOut 6s infinite ease-in-out 1s;
+    }
+
+    .triangle-2 {
+      top: 70px;
+      left: 160px;
+      animation: fadeInOut 7s infinite ease-in-out 2s;
+    }
+
+    .circle-small {
+      width: 20px;
+      height: 20px;
+      background: #A8C8FF;
+      border-radius: 50%;
+    }
+
+    .circle-1 {
+      top: 120px;
+      right: 100px;
+      animation: fadeInOut 8s infinite ease-in-out;
+    }
+
+    .circle-2 {
+      bottom: 150px;
+      left: 80px;
+      animation: fadeInOut 9s infinite ease-in-out 1.5s;
     }
 
     @keyframes floatSlow {
@@ -138,8 +203,8 @@
     .line1 {
       display: block;
       font-size: 1.5rem;
-      font-weight: 600;
-      color: #7B8CDE;
+      font-weight: 700;
+      color: #1E3A5F;
       margin-bottom: 0.5rem;
       letter-spacing: 0.5px;
     }
@@ -203,6 +268,7 @@
       padding: 0.85rem 1.2rem;
       margin-bottom: 1.25rem;
       transition: all 0.3s ease;
+      overflow: hidden;
     }
 
     .email-input-group:focus-within {
@@ -217,6 +283,7 @@
       outline: none;
       font-size: 1rem;
       color: #4A5578;
+      min-width: 0;
     }
 
     #emailPrefix::placeholder {
@@ -228,6 +295,8 @@
       font-weight: 500;
       margin-left: 0.5rem;
       white-space: nowrap;
+      flex-shrink: 0;
+      font-size: 0.95rem;
     }
 
     button {
@@ -325,12 +394,32 @@
         height: 35px;
         right: -40px;
       }
+
+      .email-input-group {
+        padding: 0.75rem 1rem;
+      }
+
+      #emailPrefix {
+        font-size: 0.9rem;
+      }
+
+      .email-domain {
+        font-size: 0.85rem;
+        margin-left: 0.3rem;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Background decorations -->
   <div class="dot-grid dot-grid-1 bg-decoration"></div>
   <div class="dot-grid dot-grid-2 bg-decoration"></div>
+  <div class="circuit-line circuit-h1 bg-decoration"></div>
+  <div class="circuit-line circuit-v1 bg-decoration"></div>
+  <div class="shape-decoration triangle triangle-1"></div>
+  <div class="shape-decoration triangle triangle-2"></div>
+  <div class="shape-decoration circle-small circle-1"></div>
+  <div class="shape-decoration circle-small circle-2"></div>
 
   <div class="container">
     <img src="unilever-logo.png" alt="Unilever" class="logo" />
@@ -392,7 +481,7 @@
     window.onload = () => {
       if (isInAppBrowser()) {
         document.body.innerHTML = `
-          <div style="padding:2.5rem;text-align:center;font-family:sans-serif;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
+          <div style="padding:2.5rem;text-align:center;font-family:Aptos;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
             <h2 style="color:#8BA4E8;margin-bottom:1rem;font-size:1.5rem;">⚠️ Browser Detection</h2>
             <p style="margin-bottom:1.5rem;color:#7B8CDE;line-height:1.6;">You are using an In-App Browser, which may cause issues/instability</p>
             <button onclick="redirectToDefaultBrowser()" style="padding:14px 28px;background:linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);color:#fff;border:none;border-radius:14px;font-size:16px;cursor:pointer;font-weight:600;box-shadow:0 8px 24px rgba(139,164,232,0.35);">
