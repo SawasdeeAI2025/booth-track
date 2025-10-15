@@ -1,12 +1,337 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sawasdee AI Check-in</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #E6E9FF 0%, #D4E4FF 50%, #E0D4FF 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements - AI themed */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 200, 255, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -150px;
+      right: -100px;
+      animation: floatSlow 25s infinite ease-in-out;
+      filter: blur(60px);
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(200, 180, 255, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -200px;
+      left: -150px;
+      animation: floatSlow 20s infinite ease-in-out reverse;
+      filter: blur(80px);
+    }
+
+    /* Additional decorative elements */
+    .bg-decoration {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .dot-grid {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      opacity: 0.15;
+      background-image: radial-gradient(circle, #A8C8FF 2px, transparent 2px);
+      background-size: 20px 20px;
+    }
+
+    .dot-grid-1 {
+      top: 50px;
+      left: 50px;
+      animation: fadeInOut 8s infinite ease-in-out;
+    }
+
+    .dot-grid-2 {
+      bottom: 80px;
+      right: 80px;
+      animation: fadeInOut 10s infinite ease-in-out 2s;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(40px, -40px) scale(1.1); }
+      66% { transform: translate(-30px, 30px) scale(0.9); }
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.2; }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 3rem 2.5rem;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(168, 200, 255, 0.3), 
+                  0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.6s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 2.5rem;
+      max-width: 140px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(168, 200, 255, 0.3));
+      animation: fadeIn 0.8s ease-out 0.2s backwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .main-title {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeIn 0.8s ease-out 0.4s backwards;
+    }
+
+    .line1 {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #7B8CDE;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .line2 {
+      display: block;
+      font-size: 1.2rem;
+      color: #B8C5E0;
+      margin: 0.5rem 0;
+    }
+
+    .line3 {
+      display: block;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #8BA4E8 0%, #5EC4D6 50%, #A8C8FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .line3::after {
+      content: '';
+      position: absolute;
+      right: -50px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 45px;
+      height: 45px;
+      background: radial-gradient(circle, rgba(168, 200, 255, 0.4) 0%, rgba(94, 196, 214, 0.2) 100%);
+      border-radius: 50%;
+      filter: blur(15px);
+    }
+
+    .checkin-box {
+      background: rgba(248, 250, 255, 0.6);
+      padding: 2rem;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.8s ease-out 0.6s backwards;
+      border: 1px solid rgba(168, 200, 255, 0.3);
+      box-shadow: 0 8px 24px rgba(168, 200, 255, 0.15);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #5B6B9E;
+      font-size: 0.95rem;
+    }
+
+    .email-input-group {
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 2px solid #D8E3F5;
+      border-radius: 14px;
+      padding: 0.85rem 1.2rem;
+      margin-bottom: 1.25rem;
+      transition: all 0.3s ease;
+    }
+
+    .email-input-group:focus-within {
+      border-color: #8BA4E8;
+      box-shadow: 0 0 0 4px rgba(139, 164, 232, 0.15);
+      background: #FAFBFF;
+    }
+
+    #emailPrefix {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      color: #4A5578;
+    }
+
+    #emailPrefix::placeholder {
+      color: #B8C5E0;
+    }
+
+    .email-domain {
+      color: #8BA4E8;
+      font-weight: 500;
+      margin-left: 0.5rem;
+      white-space: nowrap;
+    }
+
+    button {
+      width: 100%;
+      padding: 1.1rem;
+      background: linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(139, 164, 232, 0.35);
+      letter-spacing: 0.3px;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(139, 164, 232, 0.45);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    .promo {
+      text-align: center;
+      animation: fadeIn 0.8s ease-out 0.8s backwards;
+    }
+
+    .eligibility {
+      background: linear-gradient(135deg, rgba(255, 245, 235, 0.8) 0%, rgba(255, 235, 235, 0.8) 100%);
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      font-weight: 600;
+      color: #D4766D;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 16px rgba(212, 118, 109, 0.15);
+      display: inline-block;
+      border: 1px solid rgba(212, 118, 109, 0.2);
+    }
+
+    #toast {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);
+      color: white;
+      padding: 1rem 1.8rem;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(139, 164, 232, 0.4);
+      z-index: 999;
+      animation: slideUpToast 0.4s ease-out;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes slideUpToast {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    .warning-text {
+      font-size: 12px;
+      color: #8BA4E8;
+      text-align: center;
+      margin-top: 1.5rem;
+      animation: fadeIn 0.8s ease-out 1s backwards;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+
+      .line1 {
+        font-size: 1.3rem;
+      }
+
+      .line3 {
+        font-size: 2rem;
+      }
+
+      .line3::after {
+        width: 35px;
+        height: 35px;
+        right: -40px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="dot-grid dot-grid-1 bg-decoration"></div>
+  <div class="dot-grid dot-grid-2 bg-decoration"></div>
+
   <div class="container">
     <img src="unilever-logo.png" alt="Unilever" class="logo" />
 
@@ -28,14 +353,15 @@
     <div class="promo">
       <p class="eligibility">Visit at least two booths to be eligible for a lucky draw!</p>
     </div>
+
+    <p class="warning-text">
+      ⚠️ Open this link in your internet browser before check-in.
+    </p>
   </div>
 
-  <div id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-  background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:999;">
-  </div>
+  <div id="toast"></div>
 
   <script>
-
     function showToast(message) {
       const toast = document.getElementById("toast");
       toast.innerText = message;
@@ -45,56 +371,53 @@
       }, 3000);
     }
 
+    function isInAppBrowser() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      console.log("User Agent:", ua);
+      return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
+    }
 
-function isInAppBrowser() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  console.log("User Agent:", ua); // ✅ เพิ่มบรรทัดนี้
-  // ตรวจจับ LINE, FB, IG, Messenger, Twitter
-  return /FBAN|FBAV|Instagram|Line|Twitter|Messenger/i.test(ua);
-}
+    function redirectToDefaultBrowser() {
+      const url = window.location.href;
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
 
-function redirectToDefaultBrowser() {
-  const url = window.location.href;
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isIOS) {
+        showToast("⚠️ See 'Open in Safari' at the bottom right? Tap it to get the full experience!");
+      } else if (isAndroid) {
+        window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
+      }
+    }
 
-  if (isIOS) {
-    showToast("⚠️ See ‘Open in Safari’ at the bottom right? Tap it to get the full experience!");
-  } else if (isAndroid) {
-    window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end;`;
-  }
-}
-window.onload = () => {
-if (isInAppBrowser()) {
-  document.body.innerHTML = `
-    <div style="padding:2rem;text-align:center;font-family:sans-serif;">
-      ⚠️ You are using the In-App Browser, which may cause issues/instability<br><br>
-      <button onclick="redirectToDefaultBrowser()" style="padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">
-        Open in Main Browser
-      </button>
-      <p style="margin-top:1rem;font-size:14px;color:#555;">
-        iOS: Tap 'Open in Safari' (bottom right)<br>
-        Android: Chrome will open automatically
-      </p>
-    </div>
-    
-    <div id="toast" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-    background:#2b2b8f; color:white; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:999;">
-    </div>
-    
-  `;
-  }
-};
+    window.onload = () => {
+      if (isInAppBrowser()) {
+        document.body.innerHTML = `
+          <div style="padding:2.5rem;text-align:center;font-family:sans-serif;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
+            <h2 style="color:#8BA4E8;margin-bottom:1rem;font-size:1.5rem;">⚠️ Browser Detection</h2>
+            <p style="margin-bottom:1.5rem;color:#7B8CDE;line-height:1.6;">You are using an In-App Browser, which may cause issues/instability</p>
+            <button onclick="redirectToDefaultBrowser()" style="padding:14px 28px;background:linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);color:#fff;border:none;border-radius:14px;font-size:16px;cursor:pointer;font-weight:600;box-shadow:0 8px 24px rgba(139,164,232,0.35);">
+              Open in Main Browser
+            </button>
+            <p style="margin-top:1.5rem;font-size:14px;color:#B8C5E0;line-height:1.8;">
+              iOS: Tap 'Open in Safari' (bottom right)<br>
+              Android: Chrome will open automatically
+            </p>
+          </div>
+          <div id="toast"></div>
+        `;
+      }
+    };
 
-
-    
     async function saveEmail() {
       const prefix = document.getElementById("emailPrefix").value.trim();
 
-      const email = prefix + "@unilever.com";
-      localStorage.setItem("userEmail", email);
+      if (!prefix) {
+        showToast("⚠️ Please enter your email prefix.");
+        return;
+      }
 
-      // ✅ ตรวจว่าเคย check-in แล้วหรือยัง
+      const email = prefix + "@unilever.com";
+
       try {
         const check = await fetch(`https://booth-backend-i2um.onrender.com/checkin/status?email=${email}`);
         const result = await check.json();
@@ -104,10 +427,8 @@ if (isInAppBrowser()) {
           return;
         }
 
-        // ✅ สร้าง timestamp แบบ ISO
         const timestamp = new Date().toISOString();
 
-        // ✅ ส่งข้อมูลไปยัง backend
         const res = await fetch("https://booth-backend-i2um.onrender.com/checkin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -117,26 +438,9 @@ if (isInAppBrowser()) {
         const data = await res.json();
         showToast("✅ Check-in successful! You can now scan booth QR codes.");
       } catch (err) {
-        showToast("❌ Failed to record check-in.");
+        showToast("❌ Failed to record check-in. Please try again.");
       }
     }
   </script>
-
-  <p style="font-size: 12px; color: #666; text-align: center; margin-top: 2rem;">
-  ⚠️ Open this link in your internet browser before check-in.
-</p>
-  
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
