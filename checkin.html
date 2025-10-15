@@ -481,7 +481,7 @@
     window.onload = () => {
       if (isInAppBrowser()) {
         document.body.innerHTML = `
-          <div style="padding:2.5rem;text-align:center;font-family:Aptos;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
+          <div style="padding:2.5rem;text-align:center;font-family:Inter;background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);border-radius:24px;max-width:420px;margin:2rem auto;box-shadow:0 20px 60px rgba(168,200,255,0.3);border:1px solid rgba(255,255,255,0.6);">
             <h2 style="color:#8BA4E8;margin-bottom:1rem;font-size:1.5rem;">⚠️ Browser Detection</h2>
             <p style="margin-bottom:1.5rem;color:#7B8CDE;line-height:1.6;">You are using an In-App Browser, which may cause issues/instability</p>
             <button onclick="redirectToDefaultBrowser()" style="padding:14px 28px;background:linear-gradient(135deg, #8BA4E8 0%, #5EC4D6 100%);color:#fff;border:none;border-radius:14px;font-size:16px;cursor:pointer;font-weight:600;box-shadow:0 8px 24px rgba(139,164,232,0.35);">
@@ -533,4 +533,5 @@
   </script>
 </body>
 </html>
+
 
