@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Inter';
+  font-family: 'Inter', sans-serif;
   background: linear-gradient(to bottom right, #cce0ff, #e0ccff);
   color: #333;
   text-align: center;
@@ -150,6 +150,7 @@ button {
 }
 
 }
+
 
 
 
