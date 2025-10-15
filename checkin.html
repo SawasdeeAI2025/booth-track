@@ -506,6 +506,7 @@
       }
 
       const email = prefix + "@unilever.com";
+      localStorage.setItem("userEmail", email);
 
       try {
         const check = await fetch(`https://booth-backend-i2um.onrender.com/checkin/status?email=${email}`);
@@ -533,6 +534,7 @@
   </script>
 </body>
 </html>
+
 
 
 
